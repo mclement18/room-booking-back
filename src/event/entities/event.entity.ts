@@ -19,15 +19,22 @@ export class Event {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column()
+  @Column({
+    type: 'varchar',
+    length: 150,
+  })
   name: string;
 
-  @Column()
+  @Column({
+    type: 'timestamp',
+  })
   start: Date;
 
-  @Column()
+  @Column({
+    type: 'timestamp',
+  })
   end: Date;
 
-  @ManyToOne(() => Room, (room) => room.events)
+  @ManyToOne(() => Room, (room) => room.events, { nullable: false })
   room: Room;
 }

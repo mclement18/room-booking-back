@@ -19,9 +19,24 @@ export class Room {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column()
+  @Column({
+    type: 'varchar',
+    length: 75,
+    unique: true,
+  })
   name: string;
 
-  @OneToMany(() => Event, (event) => event.room)
+  @Column({
+    type: 'varchar',
+    length: 15,
+    unique: true,
+  })
+  color: string;
+
+  @OneToMany(() => Event, (event) => event.room, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    orphanedRowAction: 'delete',
+  })
   events: Event[];
 }

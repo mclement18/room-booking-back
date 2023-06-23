@@ -6,6 +6,10 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
+  Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { RoomService } from './room.service';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -16,6 +20,7 @@ export class RoomController {
   constructor(private readonly roomService: RoomService) {}
 
   @Post()
+  @UsePipes(new ValidationPipe({ transform: true }))
   create(@Body() createRoomDto: CreateRoomDto) {
     return this.roomService.create(createRoomDto);
   }
@@ -26,22 +31,34 @@ export class RoomController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.roomService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.roomService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRoomDto: UpdateRoomDto) {
-    return this.roomService.update(+id, updateRoomDto);
+  @UsePipes(new ValidationPipe({ transform: true }))
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateRoomDto: UpdateRoomDto,
+  ) {
+    return this.roomService.update(id, updateRoomDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.roomService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.roomService.remove(id);
   }
 
   @Get(':id/event')
-  findAllEvent(@Param('id') id: string) {
-    return this.roomService.findAllEvent(+id);
+  findAllEvent(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('from') from?: Date,
+    @Query('to') to?: Date,
+  ) {
+    if (from && to) {
+      return this.roomService.findEventsInRange(id, from, to);
+    } else {
+      return this.roomService.findAllEvent(id);
+    }
   }
 }
