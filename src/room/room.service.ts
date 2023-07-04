@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
-import { Between, Repository } from 'typeorm';
+import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { Room } from './entities/room.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Event } from 'src/event/entities/event.entity';
@@ -51,6 +51,11 @@ export class RoomService {
       where: [
         { room: { id }, start: Between(from, to) },
         { room: { id }, end: Between(from, to) },
+        {
+          room: { id },
+          start: LessThanOrEqual(from),
+          end: MoreThanOrEqual(to),
+        },
       ],
     });
   }

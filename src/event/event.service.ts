@@ -3,7 +3,7 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Event } from './entities/event.entity';
-import { Between, Repository } from 'typeorm';
+import { Between, LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { Room } from 'src/room/entities/room.entity';
 
 @Injectable()
@@ -26,7 +26,11 @@ export class EventService {
   findInRange(from: Date, to: Date) {
     return this.eventRepository.find({
       relations: { room: true },
-      where: [{ start: Between(from, to) }, { end: Between(from, to) }],
+      where: [
+        { start: Between(from, to) },
+        { end: Between(from, to) },
+        { start: LessThanOrEqual(from), end: MoreThanOrEqual(to) },
+      ],
     });
   }
 
